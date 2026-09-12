@@ -11,7 +11,7 @@ LINKS = [
     {"name": "J6", "length": 0.10, "mass": 0.3, "com": 0.05},
 ]
 
-PAYLOAD = {"mass": 2.0, "distance": 0.10}
+PAYLOAD = {"mass": 5.0, "distance": 0.80}
 
 # Candidate motor/gearbox data for the calculator demo.
 # These are example engineering values, not purchase recommendations.
