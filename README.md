@@ -38,3 +38,5 @@ All robot parameters are entered interactively in the Streamlit sidebar:
 - safety factor.
 
 Motor and gearbox options are defined in `app.py` (`MOTOR_OPTIONS`, `GEARBOX_OPTIONS`).
+=======
+# 6-Axis-Robot-Torque-Calculator
