@@ -1,41 +1,40 @@
-# O1 Torque Calculator v2
+# 6-Axis Robot Torque Calculator v3
 
-Расширенный каркас расчётчика моментов для манипулятора O1.
+Streamlit-based torque calculator for a 6-axis manipulator.
 
-## Что уже есть
+## Features
 
-- 6 осей;
-- углы суставов;
-- масса и длина каждого звена;
-- положение центра масс (`com`);
-- полезная нагрузка;
-- упрощённый статический расчёт гравитационных моментов по всем осям;
-- коэффициент запаса;
-- расчёт требуемого момента на выходе редуктора;
-- простой подбор двигателя + редуктора из таблицы кандидатов.
+- 6 configurable axes;
+- adjustable joint angles;
+- link length, mass and center of mass (`com`) for each link;
+- configurable payload mass;
+- simplified static gravity torque calculation for all joints;
+- safety factor;
+- required torque at gearbox output;
+- motor + gearbox selection from candidate tables;
+- interactive SVG diagram of the robot arm with dimensions.
 
-## Запуск
+## Run
 
 ```bash
-python main.py
+start.bat
 ```
 
-## Важно
+Requires a shared virtual environment at `..\venv`.
 
-Текущий расчёт — **планарная статическая модель первого приближения**. Это не замена полноценному Newton-Euler / пространственному динамическому анализу промышленного робота.
+## Important
 
-Значения двигателей и редукторов в `config.py` — демонстрационные. Их нельзя использовать для заказа оборудования.
+The current calculation is a **planar static first-approximation model**. It does not replace a full Newton-Euler / spatial dynamic analysis of an industrial robot.
 
-Следующий этап для O1 — заменить примерные размеры и массы на реальные параметры конструкции и затем добавить полноценную 3D-кинематику/динамику.
+Motor and gearbox values in `app.py` are for demonstration only. Do not use them for equipment procurement.
 
-## Где менять параметры
+## Where to change parameters
 
-Все основные данные находятся в `config.py`:
+All robot parameters are entered interactively in the Streamlit sidebar:
 
-- `LINKS` — звенья;
-- `PAYLOAD` — груз;
-- `SAFETY_FACTOR` — запас;
-- `MOTOR_OPTIONS` — двигатели;
-- `GEARBOX_OPTIONS` — редукторы.
+- link lengths, masses and COM positions;
+- payload mass;
+- joint angles;
+- safety factor.
 
-Углы тестовой позы находятся в `main.py` в переменной `angles`.
+Motor and gearbox options are defined in `app.py` (`MOTOR_OPTIONS`, `GEARBOX_OPTIONS`).
