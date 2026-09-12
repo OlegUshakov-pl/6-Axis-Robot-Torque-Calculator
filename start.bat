@@ -8,6 +8,6 @@ if not exist "..\venv\Scripts\streamlit.exe" (
     exit /b 1
 )
 
-echo Starting Linear Cutting Calculator...
+echo Starting Manipulator Torque Calculator...
 call ..\venv\Scripts\streamlit.exe run app.py
 pause
