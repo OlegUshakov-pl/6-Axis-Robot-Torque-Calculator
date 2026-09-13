@@ -1,3 +1,4 @@
+![Manipulator](image.png)
 # 6-Axis Robot Torque Calculator v3
 
 Streamlit-based torque calculator for a 6-axis manipulator.
