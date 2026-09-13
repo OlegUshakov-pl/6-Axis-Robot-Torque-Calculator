@@ -68,7 +68,7 @@ def select_motor_and_gearbox(required_output_nm):
     return {"motor": motor, "gearbox": gearbox, "available_output_nm": output}
 
 
-col_sidebar, col_main = st.columns([1, 2])
+col_sidebar, col_main = st.columns([1, 4])
 
 with col_sidebar:
     st.header("Robot Parameters")
@@ -95,23 +95,17 @@ with col_sidebar:
         )
         links.append({"name": f"J{i + 1}", "length": length, "mass": mass, "com": com})
 
-    st.markdown("---")
-    st.subheader("Payload")
-    payload_mass = st.number_input("Payload mass (kg)", min_value=0.0, max_value=100.0, value=5.0, step=0.1, format="%.1f")
-
-    st.markdown("---")
-    st.subheader("Joint Angles (deg)")
-    angles = []
-    for i in range(num_axes):
-        angle = st.slider(
-            f"J{i + 1} angle", min_value=-180, max_value=180,
-            value=DEFAULT_LINKS[i].get("angle", 0) if i < len(DEFAULT_LINKS) else 0,
-            step=1, key=f"angle_{i}"
-        )
-        angles.append(angle)
-
-    st.markdown("---")
-    safety_factor = st.number_input("Safety factor", min_value=1.0, max_value=5.0, value=SAFETY_FACTOR, step=0.1, format="%.1f")
+# Joint angles need default values before main view renders,
+# actual sliders are shown under the torque table in 2 rows.
+angles = [
+    st.session_state.get(
+        f"angle_{i}",
+        DEFAULT_LINKS[i].get("angle", 0) if i < len(DEFAULT_LINKS) else 0,
+    )
+    for i in range(num_axes)
+]
+payload_mass = st.session_state.get("payload_mass", 5.0)
+safety_factor = st.session_state.get("safety_factor", SAFETY_FACTOR)
 
 with col_main:
     col_draw, col_metrics = st.columns([3, 1])
@@ -264,6 +258,42 @@ with col_main:
         })
 
     st.dataframe(table_data, use_container_width=True)
+
+    st.markdown("---")
+    col_payload, col_safety = st.columns(2)
+    with col_payload:
+        st.subheader("Payload")
+        payload_mass = st.number_input(
+            "Payload mass (kg)", min_value=0.0, max_value=100.0,
+            value=float(payload_mass), step=0.1, format="%.1f",
+            key="payload_mass",
+        )
+    with col_safety:
+        st.subheader("Safety")
+        safety_factor = st.number_input(
+            "Safety factor", min_value=1.0, max_value=5.0,
+            value=float(safety_factor), step=0.1, format="%.1f",
+            key="safety_factor",
+        )
+
+    st.subheader("Joint Angles (deg)")
+    # Two rows across the width of the torque table, compact sliders.
+    half = (num_axes + 1) // 2
+    angles = []
+    for row in (range(half), range(half, num_axes)):
+        cols = st.columns(len(row))
+        for col, i in zip(cols, row):
+            with col:
+                angle = st.slider(
+                    f"J{i + 1} angle", min_value=-180, max_value=180,
+                    value=int(st.session_state.get(
+                        f"angle_{i}",
+                        DEFAULT_LINKS[i].get("angle", 0) if i < len(DEFAULT_LINKS) else 0,
+                    )),
+                    step=1, key=f"angle_{i}",
+                )
+                angles.append((i, angle))
+    angles = [a for _, a in sorted(angles)]
 
 st.markdown("---")
 st.caption("Version: 3.0 | Static gravity torque model (first approximation)")
