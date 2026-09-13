@@ -236,26 +236,42 @@ with col_main:
         st.subheader("Robot Arm View")
         st.components.v1.html(svg_wrapper, height=svg_h + 20)
 
-    st.subheader("Joint Angles (deg)")
-    # Two rows, compact sliders, right under the figure.
-    half = (num_axes + 1) // 2
-    new_angles = []
-    for row in (range(half), range(half, num_axes)):
-        cols = st.columns(len(row))
-        for col, i in zip(cols, row):
-            with col:
-                angle = st.slider(
-                    f"J{i + 1} angle", min_value=-180, max_value=180,
-                    value=int(st.session_state.get(
-                        f"angle_{i}",
-                        DEFAULT_LINKS[i].get("angle", 0) if i < len(DEFAULT_LINKS) else 0,
-                    )),
-                    step=1, key=f"angle_{i}",
-                )
-                new_angles.append((i, angle))
-    new_angles = [a for _, a in sorted(new_angles)]
+        st.subheader("Joint Angles (deg)")
+        # Directly under the figure, inside the draw column -> narrower.
+        half = (num_axes + 1) // 2
+        new_angles = []
+        for row in (range(half), range(half, num_axes)):
+            cols = st.columns(len(row))
+            for col, i in zip(cols, row):
+                with col:
+                    angle = st.slider(
+                        f"J{i + 1} angle", min_value=-180, max_value=180,
+                        value=int(st.session_state.get(
+                            f"angle_{i}",
+                            DEFAULT_LINKS[i].get("angle", 0) if i < len(DEFAULT_LINKS) else 0,
+                        )),
+                        step=1, key=f"angle_{i}",
+                    )
+                    new_angles.append((i, angle))
+        new_angles = [a for _, a in sorted(new_angles)]
 
     st.markdown("---")
+    col_payload, col_safety = st.columns(2)
+    with col_payload:
+        st.subheader("Payload")
+        st.number_input(
+            "Payload mass (kg)", min_value=0.0, max_value=100.0,
+            value=float(payload_mass), step=0.1, format="%.1f",
+            key="payload_mass",
+        )
+    with col_safety:
+        st.subheader("Safety")
+        st.number_input(
+            "Safety factor", min_value=1.0, max_value=5.0,
+            value=float(safety_factor), step=0.1, format="%.1f",
+            key="safety_factor",
+        )
+
     st.subheader("Torque Table")
 
     table_data = []
@@ -277,23 +293,6 @@ with col_main:
         })
 
     st.dataframe(table_data, use_container_width=True)
-
-    st.markdown("---")
-    col_payload, col_safety = st.columns(2)
-    with col_payload:
-        st.subheader("Payload")
-        st.number_input(
-            "Payload mass (kg)", min_value=0.0, max_value=100.0,
-            value=float(payload_mass), step=0.1, format="%.1f",
-            key="payload_mass",
-        )
-    with col_safety:
-        st.subheader("Safety")
-        st.number_input(
-            "Safety factor", min_value=1.0, max_value=5.0,
-            value=float(safety_factor), step=0.1, format="%.1f",
-            key="safety_factor",
-        )
 
 st.markdown("---")
 st.caption("Version: 3.0 | Static gravity torque model (first approximation)")
